@@ -1,0 +1,178 @@
+---
+title:   <img src="img/logoparana.png" style="height:80px; vertical-align:middle; margin-right:12px;">
+  Conjuntura Econômica – Crédito Consignado
+author: "João Victor Adler Silveira - Modelagem de Riscos"
+lang: pt
+format:
+  html: 
+    page-layout: full
+    theme: cosmo
+    favicon: img/logoparana.png
+execute:
+  echo: false
+  warning: false
+---
+
+```{python}
+#Libraries
+import pandas as pd
+from bcb import sgs
+import plotly.express as px
+
+# Parâmetros e códigos para coleta de dados
+codigos_cc = {
+  # Concessões de crédito - Total - R$ (milhões)
+  "Concessões Total": 20631,
+
+  # Concessões de crédito - Pessoas físicas - Total	- R$ (milhões)
+  "Concessões PF": 20633,  
+  
+  #Concessões - Pessoas físicas - Crédito pessoal consignado total	- R$ (milhões)
+  "Concessões Consignado": 20671,
+
+  #Concessões - Pessoas físicas - Crédito pessoal total	- R$ (milhões)
+  "Concessões Crédito pessoal": 20672,
+
+  #Concessões - Pessoas físicas - Crédito pessoal consignado para aposentados e pensionistas do INSS- R$ (milhões)
+  "Concessões Consignado INSS": 20670,
+
+  #Concessões - Pessoas físicas - Crédito pessoal consignado para trabalhadores do setor privado	- R$ (milhões)
+  "Concessões Consignado privado": 20668,
+
+  #Concessões - Pessoas físicas - Crédito pessoal consignado para trabalhadores do setor público	- R$ (milhões)
+  "Concessões Consignado público": 20669, 
+
+  #Inadimplência da carteira - Pessoas físicas - Total	- %
+  "Inadimplência PF": 21112,
+
+  #Inadimplência da carteira - Pessoas físicas - Crédito pessoal consignado para trabalhadores do setor privado	- %
+  "Inadimplência Consignado privado": 21116,
+
+  #Inadimplência da carteira - Pessoas físicas - Crédito pessoal consignado para trabalhadores do setor público	- %
+  "Inadimplência Consignado público": 21117,
+
+  #Inadimplência da carteira - Pessoas físicas - Crédito pessoal consignado para aposentados e pensionistas do INSS	- %
+  "Inadimplência Consignado INSS": 21118,
+
+  #Inadimplência da carteira - Pessoas físicas - Crédito pessoal consignado total	- %
+  "Inadimplência Consignado": 21119,
+  
+  #Percentual da carteira com atraso entre 15 e 90 dias - Pessoas físicas - Total	- %
+  "Inadimplência 15-90 dias PF": 21033,
+
+  #Percentual da carteira com atraso entre 15 e 90 dias - Pessoas físicas - Crédito pessoal consignado para trabalhadores do setor privado	- %
+  "Inadimplência 15-90 dias Consignado privado": 21037,
+
+  #Percentual da carteira com atraso entre 15 e 90 dias - Pessoas físicas - Crédito pessoal consignado para trabalhadores do setor público	- %
+  "Inadimplência 15-90 dias Consignado público": 21038,
+
+  #Percentual da carteira com atraso entre 15 e 90 dias - Pessoas físicas - Crédito pessoal consignado para aposentados e pensionistas do INSS	- %
+  "Inadimplência 15-90 dias Consignado INSS": 21039,
+
+  #Percentual da carteira com atraso entre 15 e 90 dias - Pessoas físicas - Crédito pessoal consignado total	- %
+  "Inadimplência 15-90 dias Consignado": 21040
+}
+
+# Importa dados do SGS/BCB
+df_cc = sgs.get(codes = codigos_cc, start = "2012-01-01")
+
+# Trata dados do SGS
+df_cc.rename_axis("data", inplace = True)
+
+# Criando tabela de datas
+meses = [
+    "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+    "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+]
+
+df_cc['mes_nome'] = df_cc.index.month.map(lambda x: meses[x-1])
+df_cc['ano'] = df_cc.index.year
+
+```
+
+```{python}
+#Variáveis e variações do último período em relação ao anterior, YoY e MoM.
+
+#Mês mais recente para o relatório
+data_ultimo_mes = df_cc.index.max()
+#tempo_para_mes_um = data_ultimo_mes.month - 1
+nome_ultimo_mes = df_cc.loc[data_ultimo_mes, 'mes_nome']
+
+#Medidas de variação e proporção
+cols_concessoes = ['Concessões Total', 'Concessões PF', 'Concessões Consignado',
+       'Concessões Crédito pessoal', 'Concessões Consignado INSS',
+       'Concessões Consignado privado', 'Concessões Consignado público']
+
+for i in cols_concessoes:
+  df_cc[f'{i} - Variação MoM'] = df_cc[f'{i}'].pct_change(1) * 100
+  df_cc[f'{i} - Variação YoY'] = df_cc[f'{i}'].pct_change(12) * 100
+  valor_janeiro = df_cc.groupby('ano')[f'{i}'].transform('first')
+  df_cc[f'{i} - Variação do Ano'] = (df_cc[f'{i}'] / valor_janeiro - 1) * 100
+
+df_cc['Concessões Consignado - Pct. sobre PF'] = df_cc['Concessões Consignado'] / df_cc['Concessões PF'] * 100
+df_cc['Concessões Consigando INSS - Percentual'] = df_cc['Concessões Consignado INSS'] / df_cc['Concessões Consignado'] * 100
+df_cc['Concessões Consigando Privado - Percentual'] = df_cc['Concessões Consignado privado'] / df_cc['Concessões Consignado'] * 100
+df_cc['Concessões Consigando Público - Percentual'] = df_cc['Concessões Consignado público'] / df_cc['Concessões Consignado'] * 100
+
+# Variação de Consignado MoM - Análise de Grupos
+
+cc_mom = df_cc[df_cc.index == df_cc.index.max()][['Concessões Consignado INSS - Variação MoM',
+       'Concessões Consignado privado - Variação MoM',
+       'Concessões Consignado público - Variação MoM',]].stack().sort_values(ascending = False).reset_index()
+cc_mom['level_1'] = cc_mom['level_1'].str.split(" ", expand = True)[2]
+
+cc_yoy = df_cc[df_cc.index == df_cc.index.max()][['Concessões Consignado INSS - Variação YoY',
+       'Concessões Consignado privado - Variação YoY',
+       'Concessões Consignado público - Variação YoY',]].stack().sort_values(ascending = False).reset_index()
+cc_yoy['level_1'] = cc_yoy['level_1'].str.split(" ", expand = True)[2]
+
+```
+
+::::: grid
+::: g-col-7
+## Sumário Executivo - `{python} nome_ultimo_mes`
+
+-   No mês de `{python} nome_ultimo_mes` verificamos uma variação de `{python} format(df_cc[df_cc.index == df_cc.index.max()]['Concessões Total - Variação MoM'].iloc[0], '.2f')`% nas concessões de crédito total em relação ao mês anterior. Numa comparação em relação ao mesmo período do ano anterior, a diferença é de `{python} format(df_cc[df_cc.index == df_cc.index.max()]['Concessões Total - Variação YoY'].iloc[0], '.2f')`%.
+-   Já a concessão de Crédito Consignado, considerando todos os grupos, variou `{python} format(df_cc[df_cc.index == df_cc.index.max()]['Concessões Consignado - Variação MoM'].iloc[0], '.2f')`% em relação ao mês anterior e `{python} format(df_cc[df_cc.index == df_cc.index.max()]['Concessões Consignado - Variação YoY'].iloc[0], '.2f')`% comparado ao mesmo mês de 2024.
+-   O Consignado `{python} cc_mom['level_1'][0]` foi o de maior variação em relação ao mês anterior, em termos de concessão de crédito, `{python} format(cc_mom[0][0], ".2f")`%, seguido do Consignado `{python} cc_mom['level_1'][1]` com `{python} format(cc_mom[0][1], ".2f")`% e então `{python} cc_mom['level_1'][2]`, que verificou uma diferença de `{python} format(cc_mom[0][2], ".2f")`%.
+
+
+## Concessões e Saldos
+
+O volume de Concessões de Crédito Consignado chegou à R$`{python} format((df_cc[df_cc.index == df_cc.index.max()]['Concessões Consignado'] /1000).iloc[0], '.2f')` bilhões, `{python} format((df_cc[df_cc.index == df_cc.index.max()]['Concessões Consignado - Variação MoM']).iloc[0], '.2f')`% em relação ao mês anterior. O driver do período foi o Consignado `{python} cc_mom['level_1'][0]`, seguido de Consignado `{python} cc_mom['level_1'][1]` e `{python} cc_mom['level_1'][2]`, respectivamente. As concessões de consignado representaram `{python} format(df_cc[df_cc.index == df_cc.index.max()]['Concessões Consignado - Pct. sobre PF'].iloc[0], '.2f')`% das concessão total de crédito direcionado à Pessoa Física, com um volume de R$`{python} format((df_cc[df_cc.index == df_cc.index.max()]['Concessões Total'] /1000).iloc[0], '.2f')` bilhões. Olhando apenas para Consignado, o novo crédito direcionado à beneficiários do INSS representou X% do total concedido, enquanto o Privado teve um share X% e público, X%. No gráfico 3 é possível verificar a proporção da carteira em série temporal para os últimos três anos, a partir do mês do presente relatório. 
+
+Produto das concessões comentadas acima, verificamos um Saldo de Crédito Consignado na economia de R$X Bilhões, com ênfase para a categoria Y, que alcançou o patamar de R%X bilhões. Comparando-se o saldo total atual em relação a todo crédito direcionado à Pessoa Física, verificamos o share de X% no mês de TAL, uma variação de X% em relação ao mês anterior, e X% frente ao mesmo período do ano passado. 
+
+:::
+
+::: g-col-5
+```{python}
+fig1 = px.bar(cc_mom, 
+             x = 'level_1', 
+             y = 0,
+             title = "Concessões de Crédito Consignado - MoM",
+             labels = {"level_1" : 'Categorias Consignado',
+                       "0" : 'Var. MoM (%)'},
+             text_auto = '.2f',
+             )
+fig1.show()
+
+```
+
+<br><br>
+
+```{python}
+fig2 = px.bar(cc_yoy, 
+             x = 'level_1', 
+             y = 0,
+             title = "Concessões de Crédito Consignado - YoY",
+             labels = {"level_1" : 'Categorias Consignado',
+                       "0" : 'Var. YoY (%)'},
+             text_auto = '.2f',
+             )
+fig2.show()
+
+```
+
+:::
+:::::
