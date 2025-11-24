@@ -284,7 +284,7 @@ df_cc['Tipo'] = np.where(
 ```
 
 ```{python}
-: 
+
 #Variáveis para relatório
 
 filtro = df_cc.index == df_cc.index.max()
@@ -317,9 +317,9 @@ tres_consignado_mom =( df_cc[(filtro) & (df_cc['Indicador']
                                 'Concessões Consignado público']))][['Tipo', 'Var. MoM (%)']]
                           .sort_values(by = 'Var. MoM (%)', ascending = True)['Tipo'].iloc[2])
 
-var_um_consignado_mom = df_cc[(filtro) & (df_cc['Tipo'] == um_consignado_mom)]['Var. MoM (%)'].iloc()
-var_dois_consignado_mom = df_cc[(filtro) & (df_cc['Tipo'] == dois_consignado_mom)]['Var. MoM (%)'].iloc()
-var_tres_consignado_mom = df_cc[(filtro) & (df_cc['Tipo'] == tres_consignado_mom)]['Var. MoM (%)'].iloc()
+var_um_consignado_mom = df_cc[(filtro) & (df_cc['Indicador'] == f'Concessões Consignado {um_consignado_mom}')]['Var. MoM (%)'].iloc[0]
+var_dois_consignado_mom = df_cc[(filtro) & (df_cc['Indicador'] == f'Concessões Consignado {dois_consignado_mom}')]['Var. MoM (%)'].iloc[0]
+var_tres_consignado_mom = df_cc[(filtro) & (df_cc['Indicador'] == f'Concessões Consignado {tres_consignado_mom}')]['Var. MoM (%)'].iloc[0]
 
 conc_consig_privado_mom = df_cc[(filtro) & (df_cc['Indicador'] == 'Concessões Consignado privado')]['Var. MoM (%)'].iloc[0]
 conc_consig_publico_mom = df_cc[(filtro) & (df_cc['Indicador'] == 'Concessões Consignado público')]['Var. MoM (%)'].iloc[0]
@@ -329,157 +329,88 @@ conc_consig_privado_yoy = df_cc[(filtro) & (df_cc['Indicador'] == 'Concessões C
 conc_consig_publico_yoy = df_cc[(filtro) & (df_cc['Indicador'] == 'Concessões Consignado público')]['Var. YoY (%)'].iloc[0]
 conc_consig_inss_yoy = df_cc[(filtro) & (df_cc['Indicador'] == 'Concessões Consignado INSS')]['Var. YoY (%)'].iloc[0]
 
+conc_consignado_valor = format(df_cc[(filtro) & (df_cc['Indicador'] == 'Concessões Consignado')]['Valor'].iloc[0] / 1000, '.2f')
+
+conc_consignado_sobre_carteira = format((df_cc[(filtro) & (df_cc['Indicador'] == 'Concessões Consignado')]['Valor'].iloc[0] / df_cc[(filtro) & (df_cc['Indicador'] == 'Concessões PF')]['Valor'].iloc[0]) *100, '.2f')
+
+conc_inss_sobre_consignado = format((df_cc[(filtro) & (df_cc['Indicador'] == 'Concessões Consignado INSS')]['Valor'].iloc[0] / df_cc[(filtro) & (df_cc['Indicador'] == 'Concessões Consignado')]['Valor'].iloc[0]) *100, '.2f')
+
+conc_privado_sobre_consignado = format((df_cc[(filtro) & (df_cc['Indicador'] == 'Concessões Consignado privado')]['Valor'].iloc[0] / df_cc[(filtro) & (df_cc['Indicador'] == 'Concessões Consignado')]['Valor'].iloc[0]) *100, '.2f')
+
+conc_publico_sobre_consignado = format((df_cc[(filtro) & (df_cc['Indicador'] == 'Concessões Consignado público')]['Valor'].iloc[0] / df_cc[(filtro) & (df_cc['Indicador'] == 'Concessões Consignado')]['Valor'].iloc[0]) *100, '.2f')
+
 #Saldos
 
- #Inadimplência & Atraso
+#Inadimplência & Atraso
+
+inad_pf = format(df_cc[(filtro) & (df_cc['Indicador'] == 'Inadimplência PF')]['Valor'].iloc[0], '.2f')
+inad_consig = format(df_cc[(filtro) & (df_cc['Indicador'] == 'Inadimplência Consignado')]['Valor'].iloc[0], '.2f')
+inad_consig_inss = format(df_cc[(filtro) & (df_cc['Indicador'] == 'Inadimplência Consignado INSS')]['Valor'].iloc[0], '.2f')
+inad_consig_privado = format(df_cc[(filtro) & (df_cc['Indicador'] == 'Inadimplência Consignado privado')]['Valor'].iloc[0], '.2f')
+inad_consig_publico = format(df_cc[(filtro) & (df_cc['Indicador'] == 'Inadimplência Consignado público')]['Valor'].iloc[0], '.2f')
+
+inad_consig_mom = df_cc[(filtro) & (df_cc['Indicador'] == 'Inadimplência Consignado')]['Var. MoM (%)'].iloc[0]
+inad_consig_inss_mom = df_cc[(filtro) & (df_cc['Indicador'] == 'Inadimplência Consignado INSS')]['Var. MoM (%)'].iloc[0]
+inad_consig_privado_mom = df_cc[(filtro) & (df_cc['Indicador'] == 'Inadimplência Consignado privado')]['Var. MoM (%)'].iloc[0]
+inad_consig_publico_mom = df_cc[(filtro) & (df_cc['Indicador'] == 'Inadimplência Consignado público')]['Var. MoM (%)'].iloc[0]
+
+inad_consig_yoy = df_cc[(filtro) & (df_cc['Indicador'] == 'Inadimplência Consignado')]['Var. YoY (%)'].iloc[0]
+inad_consig_inss_yoy = df_cc[(filtro) & (df_cc['Indicador'] == 'Inadimplência Consignado INSS')]['Var. YoY (%)'].iloc[0]
+inad_consig_privado_yoy = df_cc[(filtro) & (df_cc['Indicador'] == 'Inadimplência Consignado privado')]['Var. YoY (%)'].iloc[0]
+inad_consig_publico_yoy = df_cc[(filtro) & (df_cc['Indicador'] == 'Inadimplência Consignado público')]['Var. YoY (%)'].iloc[0]
+
+um_inad_consig =( df_cc[(filtro) & (df_cc['Indicador']
+                          .isin(['Inadimplência Consignado INSS',
+                                'Inadimplência Consignado privado', 
+                                'Inadimplência Consignado público']))][['Tipo', 'Valor']]
+                          .sort_values(by = 'Valor', ascending = True)['Tipo'].iloc[0])
+
+dois_inad_consig = (df_cc[(filtro) & (df_cc['Indicador']
+                          .isin(['Inadimplência Consignado INSS',
+                                'Inadimplência Consignado privado', 
+                                'Inadimplência Consignado público']))][['Tipo', 'Valor']]
+                          .sort_values(by = 'Valor', ascending = True)['Tipo'].iloc[1])
+
+tres_inad_consig =( df_cc[(filtro) & (df_cc['Indicador']
+                          .isin(['Inadimplência Consignado INSS',
+                                'Inadimplência Consignado privado', 
+                                'Inadimplência Consignado público']))][['Tipo', 'Valor']]
+                          .sort_values(by = 'Valor', ascending = True)['Tipo'].iloc[2])
+
+valor_um_inad_consig = df_cc[(filtro) & (df_cc['Indicador'] == f'Inadimplência Consignado {um_inad_consig}')]['Valor'].iloc[0]
+valor_dois_inad_consig = df_cc[(filtro) & (df_cc['Indicador'] == f'Inadimplência Consignado {dois_inad_consig}')]['Valor'].iloc[0]
+valor_tres_inad_consig = df_cc[(filtro) & (df_cc['Indicador'] == f'Inadimplência Consignado {tres_inad_consig}')]['Valor'].iloc[0]
+
 
 ```
 
 ::::: grid
 ::: g-col-7 
-## Sumário Executivo - `{python} mes_recente`
+## Sumário Executivo
 
 -   No mês de `{python} mes_recente` verificamos uma variação de `{python} conc_total_mom`% nas concessões de crédito total em relação ao mês anterior. Numa comparação em relação ao mesmo período do ano anterior, a diferença é de `{python} conc_total_yoy`%.
 -   A concessão de Crédito Consignado, considerando todos os grupos, variou `{python} conc_consig_total_mom`% em relação ao mês anterior e `{python} conc_consig_total_yoy`% comparado ao mesmo mês de 2024.
--   O Consignado `{python} maior_consignado_mom` foi o de maior variação em relação ao mês anterior, em termos de concessão de crédito, `{python} var_maior_consignado_mom`%, seguido do Consignado `{python} dois_consignado_mom` com `{python} var_dois_consignado_mom`% e então `{python} tres_consignado_mom`, que verificou uma diferença de `{python} tres_consignado_mom`%.
+-   O Consignado `{python} um_consignado_mom` foi o de maior variação em relação ao mês anterior, em termos de concessão de crédito, `{python} um_consignado_mom`%, seguido do Consignado `{python} dois_consignado_mom` com `{python} var_dois_consignado_mom`% e então `{python} tres_consignado_mom`, que verificou uma diferença de `{python} var_tres_consignado_mom`%.
 
 ## Concessões e Saldos
 
-O volume de Concessões de Crédito Consignado chegou à R$`{python} format((df_cc[df_cc.index == df_cc.index.max()]['Concessões Consignado'] /1000).iloc[0], '.2f')` bilhões, `{python} format((df_cc[df_cc.index == df_cc.index.max()]['Concessões Consignado - Variação MoM']).iloc[0], '.2f')`% em relação ao mês anterior. O driver do período foi o Consignado `{python} cc_mom['level_1'][0]`, seguido de Consignado `{python} cc_mom['level_1'][1]` e `{python} cc_mom['level_1'][2]`, respectivamente. As concessões de consignado representaram `{python} format(df_cc[df_cc.index == df_cc.index.max()]['Concessões Consignado - Pct. sobre PF'].iloc[0], '.2f')`% das concessão total de crédito direcionado à Pessoa Física, com um volume de R$`{python} format((df_cc[df_cc.index == df_cc.index.max()]['Concessões Total'] /1000).iloc[0], '.2f')` bilhões. Olhando apenas para Consignado, o novo crédito direcionado à beneficiários do INSS representou `{python} format(df_cc[df_cc.index == df_cc.index.max()]['Concessões Consigando INSS - Percentual'].iloc[0], '.2f')`% do total concedido, enquanto o Privado teve um share `{python} format(df_cc[df_cc.index == df_cc.index.max()]['Concessões Consigando Privado - Percentual'].iloc[0], '.2f')`% e público, `{python} format(df_cc[df_cc.index == df_cc.index.max()]['Concessões Consigando Público - Percentual'].iloc[0], '.2f')`%. No gráfico 3 é possível verificar a proporção da carteira em série temporal para os últimos três anos, a partir do mês do presente relatório.
+O volume de Concessões de Crédito Consignado chegou à R$`{python} conc_consignado_valor` bilhões, o que representou `{python} conc_consignado_sobre_carteira`% das concessões com recursos livres direcionadas à Pessoa Física. O driver do período foi o Consignado `{python} um_consignado_mom`, seguido de Consignado `{python} dois_consignado_mom` e `{python} tres_consignado_mom`, respectivamente. Olhando apenas para Consignado, o novo crédito direcionado à beneficiários do INSS representou `{python} conc_inss_sobre_consignado`% do total concedido, enquanto o Privado teve um share `{python} conc_privado_sobre_consignado`% e público, `{python} conc_publico_sobre_consignado`%. No gráfico ao lado é possível verificar a composição da carteira de consignado nos últimos dois anos em relação ao mês do presente relatório.
 
 ## Inadimplência e Atrasos
 
-A carteira de Crédito à Pessoa Física apresentou `{python} inad_pf_pct`% de inadimplência, e um percentual de atraso de 15 a 90 dias de `{python} atraso_pf_pct`%, R$ `{python} inad_pf_abs` Bilhões e R$`{python} atraso_pf_abs` Bilhões, respectivamente, em termos absolutos. 
-
-
+A carteira de Crédito à Pessoa Física apresentou `{python} inad_pf`% de inadimplência, enquanto apenas a Carteira de Crédito Consignado resultou em `{python} inad_consig`%, uma variação de `{python} inad_consig_mom`% em relação ao mês anterior e `{python} inad_consig_yoy`% sobre o mesmo período do ano anterior. Realizando um breakdown dessa modalidade de crédito, verifica-se que o Consignado `{python} um_inad_consig` apresentou o maior índice de inadimplência no mês, `{python} valor_um_inad_consig`, seguido por `{python} dois_inad_consig` e `{python} tres_inad_consig`, com percentuais de `{python} valor_dois_inad_consig` e `{python} valor_tres_inad_consig`, respectivamente.
 :::
 
 ::: g-col-5
 
 ```{python}
-df_plot = df_cc[df_cc.index >= "2020-01-01"]
-
-fig3 = make_subplots(specs = [[{"secondary_y" : True}]])
-
-fig3.add_trace(
-  go.Bar(
-    x = df_plot.index,
-    y = df_plot['Concessões PF'],
-    name = "Concessões PF (R$ Milhões)"
-  ),
-  secondary_y = False
-)
-
-fig3.add_trace(
-  go.Scatter(
-    x = df_plot.index,
-    y = df_plot['Concessões PF - Variação YoY'],
-    name = "Variação YoY (%)",
-  ),
-  secondary_y = True
-)
-
-fig3.update_layout(
-    title="Concessões Pessoa Física com Recursos Livres",
-    xaxis_title="",
-    height = 380,
-    legend=dict(
-        orientation="h",     
-        yanchor="top",
-        y=1.15,                
-        xanchor="center",
-        x=0.5
-    ),
-    template = 'simple_white',
-    margin=dict(t=90)   
-
-)
-
-fig3.show()
 
 ```
 
 ```{python}
-
-fig4 = make_subplots(specs = [[{"secondary_y" : True}]])
-
-fig4.add_trace(
-  go.Scatter(
-    x = df_plot.index,
-    y = df_plot['Inadimplência PF'],
-    name = "Inad. PF (%)"
-  ),
-  secondary_y = False
-)
-
-fig4.add_trace(
-  go.Scatter(
-    x = df_plot.index,
-    y = df_plot['Inadimplência Consignado'],
-    name = "Inad. Consignado (%)",
-  ),
-  secondary_y = True
-)
-
-fig4.update_layout(
-    title="Inadimplência da Carteira de Crédito",
-    xaxis_title="",
-    height = 380,
-    legend=dict(
-        orientation="h",      
-        yanchor="top",
-        y=1.15,               
-        xanchor="center",
-        x=0.5
-    ),
-    template = 'simple_white',
-    margin=dict(t=90)   
-
-)
-
-fig4.show()
-
 ```
 
 ```{python}
-
-fig5 = px.line(
-    df_plot,
-    x = df_plot.index,
-    y = ['Inadimplência Consignado privado',
-         'Inadimplência Consignado público',
-         'Inadimplência Consignado INSS'
-    ],
-    title = "Inadimplência Consignado - Breakdown(%)",
-    template="simple_white"
-  )
-
-name_map =  {
-        'Inadimplência Consignado privado': "Privado",
-        'Inadimplência Consignado público': "Público",
-        'Inadimplência Consignado INSS': "INSS"
-    }
-
-fig5.for_each_trace(
-    lambda t: t.update(name=name_map.get(t.name, t.name))
-)
-
-fig5.update_layout(
-    xaxis_title="",
-    yaxis_title="Inadimplência (%)",
-    height = 380,
-    legend=dict(
-        title="",
-        orientation="h",      
-        yanchor="top",
-        y=1.15,                
-        xanchor="center",
-        x=0.5
-    ),
-    margin=dict(t=90)   
-)
-
-fig5.show()
 
 ```
 
